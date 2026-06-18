@@ -3,90 +3,114 @@ MÓDULO: Pipeline de Extracción, Limpieza y Carga (ETL) - Datos de Pozos
 PROYECTO: Prueba de Concepto - Tesis de Grado
 AUTOR: DERINSON ROJAS
 DESCRIPCIÓN: 
-    Este script automatiza la ingesta de datos crudos de pozos provenientes de 
-    una exportación de Microsoft Access (.txt). Realiza la normalización de 
-    valores nulos, conversión forzada de tipos de datos numéricos, estandarización 
-    de fechas (formatos DD/MM/YYYY) y exporta los datos limpios tanto a un archivo 
-    plano estandarizado (CSV) como a una base de datos relacional local (PostgreSQL).
+    Fase 2 - Limpieza Avanzada y Control de Calidad.
+    Este script automatiza la ingesta y aplica las reglas de validación técnica
+    identificadas en la auditoría de datos (filtros de diámetros, normalización 
+    de indicadores booleanos y preservación de códigos de estatus históricos).
 """
 
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import os
 
 # ==========================================
 # 1. EXTRACCIÓN (Ingesta de datos crudos)
 # ==========================================
-
-# Se lee el archivo manejando la codificación de Windows (Latin-1) 
-# y estandarizando los espacios en blanco como valores NaN desde el inicio.
+print(">> Iniciando extracción de datos...")
 df = pd.read_csv(
     "pozosMaster.txt", 
     sep=";", 
     encoding="Latin-1",
-    na_values=["", " "],       # Trata espacios vacíos como nulos (NaN)
-    skipinitialspace=True      # Elimina espacios en blanco accidentales en los bordes
+    na_values=["", " "],       
+    skipinitialspace=True      
 )
 
-
 # ==========================================
-# 2. TRANSFORMACIÓN (Limpieza y Tipado de Datos)
+# 2. TRANSFORMACIÓN (Reglas de Ingeniería de Datos)
 # ==========================================
+print(">> Ejecutando reglas de transformación y calidad...")
 
-# 2.1. Conversión Forzada de Columnas Numéricas
-# Al exportar de Access, los valores faltantes o caracteres extraños rompen el tipo numérico.
-# 'errors=coerce' transforma cualquier texto no numérico o vacío en NaN (NULL), 
-# permitiendo que Pandas reconozca la columna como tipo flotante (Float64).
+# 2.1. Diccionario de Renombramiento Formal (Estandarización de Esquema)
+df.columns = df.columns.str.lower()
+
+#Se renombran columnas para clarificar su contenido
+diccionario_nombres = {
+    'iden': 'id_pozo',
+    'diam1': 'diametro_superior_in',
+    'diam2': 'diametro_inferior_in',
+    'pbombeo': 'ind_bombeo',
+    'reg': 'ind_registro',
+    'epozo': 'cod_estatus_pozo',
+    'nivel': 'nivel_estatico_m',     
+    'nd': 'nivel_dinamico_m',
+    'prop': 'propietario',           
+    'lat': 'latitud',                 # Nuevo renombramiento preliminar
+    'lon': 'longitud'                 # Nuevo renombramiento preliminar
+}
+df = df.rename(columns=diccionario_nombres)
+
+# 2.2. Conversión Forzada de Columnas Numéricas Fidedignas
+# Se actualizan las columnas con sus nuevos nombres técnicos (latitud y longitud)
 columnas_numericas = [
-    'LAT', 'LON', 'CONST', 'PERF', 'FNIV', 'GASTO', 'COTA', 
-    'ENTU', 'NIVEL', 'ND', 'DIAM1', 'DIAM2', 'NORTE', 'ESTE'
+    'latitud', 'longitud', 'const', 'perf', 'gasto', 'cota', 
+    'entu', 'nivel_estatico_m', 'nivel_dinamico_m', 'norte', 'este'
 ]
-
 for col in columnas_numericas:
     if col in df.columns:
         df[col] = pd.to_numeric(df[col], errors='coerce')
 
-# 2.2. Estandarización de Fechas
-# Se parsea el texto a objeto datetime reconociendo el formato latino (Día primero).
-# 'errors=coerce' invalida fechas mal formateadas o corruptas convirtiéndolas en NaT (Not a Time).
-df['ACT_MASTER'] = pd.to_datetime(df['ACT_MASTER'], dayfirst=True, errors='coerce')
+# 2.3. Control de Calidad Técnico para Diámetros (Umbral de 30" y Regla Telescópica)
+if 'diametro_superior_in' in df.columns:
+    df.loc[df['diametro_superior_in'] > 30, 'diametro_superior_in'] = pd.NA
 
-# Se normaliza la fecha para eliminar el componente de hora (truncar a las 00:00:00)
-# Esto garantiza compatibilidad óptima con los tipos de datos DATE de los motores SQL.
-df['ACT_MASTER'] = df['ACT_MASTER'].dt.normalize()
+if 'diametro_inferior_in' in df.columns:
+    df.loc[df['diametro_inferior_in'] > 30, 'diametro_inferior_in'] = pd.NA
 
-df.columns = df.columns.str.lower() #Columnas en minusculas para mejor manejo en PostgresSQL
+asimetria_diametros = df['diametro_superior_in'] < df['diametro_inferior_in']
+df.loc[asimetria_diametros, ['diametro_superior_in', 'diametro_inferior_in']] = pd.NA
+
+# 2.4. Normalización Booleana Fidedigna para 'ind_bombeo' (Antiguo PBOMBEO)
+mapeo_bombeo = {'SI': True, 'X': True, 'NO': False}
+df['ind_bombeo'] = df['ind_bombeo'].map(mapeo_bombeo).astype('object')
+
+# 2.5. Normalización Booleana Fidedigna para 'ind_registro' (Antiguo REG)
+mapeo_registro = {'SI': True, 'S': True, 'X': True, 'NO': False, '0': False}
+df['ind_registro'] = df['ind_registro'].map(mapeo_registro).astype('object')
+
+# 2.6. Preservación Estricta de Códigos Informativos 'cod_estatus_pozo' (Antiguo EPOZO)
+if 'cod_estatus_pozo' in df.columns:
+    df['cod_estatus_pozo'] = df['cod_estatus_pozo'].str.upper()
+
+# 2.7. Estandarización de Fechas (ACT_MASTER y feniv)
+df['act_master'] = pd.to_datetime(df['act_master'], dayfirst=True, errors='coerce').dt.normalize()
+if 'feniv' in df.columns:
+    df['feniv'] = pd.to_datetime(df['feniv'], dayfirst=True, errors='coerce').dt.normalize()
+
 # ==========================================
-# 3. CARGA (Persistencia de Datos)
+# 3. CARGA (Persistencia y Restricciones SQL)
 # ==========================================
+print(">> Exportando archivo plano CSV...")
+df.to_csv("18062026_DATOS_LIMPIOS_POZOS_MASTER.csv", index=False, encoding="utf-8", sep=";")     
 
-# 3.1. Exportación a Formato Plano Estandarizado (CSV)
-# Se guarda en UTF-8 (estándar moderno) sin incluir el índice autogenerado de Pandas.
-df.to_csv("12062026_DATOS_LIMPIOS_POZOS_MASTER.csv", index=False, encoding="utf-8", sep=";")     
-
-
-# 3.2. Carga en Base de Datos Relacional (PostgreSQL)
-# Cargar las variables del archivo .env
+print(">> Conectando con PostgreSQL para la carga...")
 load_dotenv()
-
 USER = os.getenv('DB_USER')
 PASSWORD = os.getenv('DB_PASSWORD')
 HOST = os.getenv('DB_HOST')
 PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 
-# Creación de la conexión con postgresql
 URL_CONEXION = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}'
 engine = create_engine(URL_CONEXION)
 
-# Inyectando el DataFrame directamente en el servidor de PostgreSQL
-# Si la tabla ya existe, se reemplaza ('replace') para evitar duplicidad.
-df.to_sql(
-    name="pozos_master",          # Nombre de la tabla en minúsculas
-    con=engine, 
-    if_exists="replace", 
-    index=False
-)
+# Inyección inicial en base de datos
+df.to_sql(name="pozos_master", con=engine, if_exists="replace", index=False)
 
-print(">> Pipeline ejecutado con éxito. Datos limpios y guardados en CSV y PostgreSQL (Puerto 5432).")
+# Asignación formal de la PRIMARY KEY en PostgreSQL
+with engine.connect() as con:
+    print(">> Asignando clave primaria 'id_pozo' en la base de datos...")
+    con.execute(text("ALTER TABLE public.pozos_master ADD PRIMARY KEY (id_pozo);"))
+    con.commit()
+
+print(">> Pipeline Fase 2 actualizado con nuevas etiquetas de esquema.")
