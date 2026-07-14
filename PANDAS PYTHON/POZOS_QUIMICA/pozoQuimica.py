@@ -127,10 +127,6 @@ df.to_sql(
     }
 )
 
-
-#Lectura de las fechas limpias por si es necesario algún calculo extra con valores del campo fecha correctos
-query = "SELECT * FROM v_fechas_analitica WHERE estado_fecha = 'VALIDA'"
-df_limpio = pd.read_sql(query, engine)
 '''
 # Asignación formal de la PRIMARY KEY en PostgreSQL
 # Usamos engine.begin() para que maneje el COMMIT automáticamente sin fallar por versión
