@@ -61,21 +61,43 @@ BEGIN
         NEW.fecha_analisis := NULL;
         NEW.estado_fecha   := 'INCERTIDUMBRE';
     END IF;
--- ============================================================
+    -- ============================================================
     -- LÓGICA PARA LA CONDUCTIVIDAD
     -- ============================================================
     -- Si la conductividad es negativa, la transformamos en NULL
     IF NEW.conductividad_us_cm IS NOT NULL AND NEW.conductividad_us_cm < 0 THEN
         NEW.conductividad_us_cm := NULL;
     END IF;
-	
+	-- ============================================================
+    --  DUREZA TOTAL (Recálculo y Corrección)
+    -- ============================================================
+   
+    -- PASO 1: LIMPIEZA ABSOLUTA DE PARAMETROS INDIVIDUALES
+    -- (Convertir Ceros a Nulos primero que todo)
+    
+    IF NEW.so4 = 0 THEN NEW.so4 := NULL; END IF;
+    IF NEW.ca = 0  THEN NEW.ca  := NULL; END IF;
+    IF NEW.mg = 0  THEN NEW.mg  := NULL; END IF;
+    
+    -- PASO 2: CÁLCULO Y LIMPIEZA DE DUREZA TOTAL 
+    -- (Ocurre después de limpiar Ca y Mg)
+    
+    IF (NEW.dtotal IS NULL OR NEW.dtotal = 0) THEN
+        -- Como ca y mg ya pasaron por el filtro superior, si eran 0 ahora son NULL
+        IF (NEW.ca IS NOT NULL AND NEW.mg IS NOT NULL) THEN
+            NEW.dtotal := ROUND((2.497 * NEW.ca) + (4.118 * NEW.mg), 2);
+        ELSE
+            -- Si alguno de los dos o ambos son NULL, la dureza es NULL
+            NEW.dtotal := NULL;
+        END IF;
+    END IF;
     -- Retornamos la fila modificada con todos los campos procesados
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- 3. Borramos triggers antiguos para evitar duplicidades o conflictos
-DROP TRIGGER IF EXISTS trg_limpiar_temp_cero ON public.pozos_quimica;
+
 DROP TRIGGER IF EXISTS trg_control_calidad_quimica ON public.pozos_quimica;
 
 -- 4. Creamos el nuevo trigger unificado ligado a la tabla
