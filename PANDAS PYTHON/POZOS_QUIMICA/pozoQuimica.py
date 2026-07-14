@@ -13,7 +13,7 @@ DESCRIPCIÓN:
 import os
 import pandas as pd
 import numpy as np
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, Numeric
 from dotenv import load_dotenv
 
 
@@ -116,7 +116,16 @@ URL_CONEXION = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}'
 engine = create_engine(URL_CONEXION)
 
 # Inyección inicial en base de datos
-df.to_sql(name="pozos_quimica", con=engine, if_exists="append", index=False)
+# Inyección inicial en base de datos especificando el tipo para dtotal
+df.to_sql(
+    name="pozos_quimica", 
+    con=engine, 
+    if_exists="append", 
+    index=False,
+    dtype={
+        'dtotal': Numeric(10, 2)  # <-- Fuerza a Postgres a crear la columna como numeric(10,2) 
+    }
+)
 
 
 #Lectura de las fechas limpias por si es necesario algún calculo extra con valores del campo fecha correctos
