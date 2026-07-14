@@ -83,11 +83,10 @@ BEGIN
     -- (Ocurre después de limpiar Ca y Mg)
     
     IF (NEW.dtotal IS NULL OR NEW.dtotal = 0) THEN
-        -- Como ca y mg ya pasaron por el filtro superior, si eran 0 ahora son NULL
         IF (NEW.ca IS NOT NULL AND NEW.mg IS NOT NULL) THEN
-            NEW.dtotal := ROUND((2.497 * NEW.ca) + (4.118 * NEW.mg), 2);
+            -- Se añade ::numeric para que ROUND no lance error con los double precision
+            NEW.dtotal := ROUND(((2.497 * NEW.ca) + (4.118 * NEW.mg))::numeric, 2);
         ELSE
-            -- Si alguno de los dos o ambos son NULL, la dureza es NULL
             NEW.dtotal := NULL;
         END IF;
     END IF;
