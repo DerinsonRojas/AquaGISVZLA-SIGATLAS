@@ -74,8 +74,8 @@ BEGIN
    
     -- PASO 1: LIMPIEZA ABSOLUTA DE PARAMETROS INDIVIDUALES
     -- (Convertir Ceros a Nulos primero que todo)
-    
-    IF NEW.so4 = 0 THEN NEW.so4 := NULL; END IF;
+     
+    IF NEW.so4 < 0 THEN NEW.so4 := NULL; END IF;
     IF NEW.ca = 0  THEN NEW.ca  := NULL; END IF;
     IF NEW.mg = 0  THEN NEW.mg  := NULL; END IF;
     
@@ -90,6 +90,12 @@ BEGIN
             NEW.dtotal := NULL;
         END IF;
     END IF;
+
+    -- ============================================================
+    --  ALCALINIDAD (Corrección de ceros y outliers)
+    -- ============================================================
+    IF NEW.alc <= 0 THEN NEW.alc := NULL; END IF;
+
     -- Retornamos la fila modificada con todos los campos procesados
     RETURN NEW;
 END;
