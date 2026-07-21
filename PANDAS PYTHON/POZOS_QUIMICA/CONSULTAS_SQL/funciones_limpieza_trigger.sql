@@ -95,6 +95,11 @@ BEGIN
     --  ALCALINIDAD (Corrección de ceros y outliers)
     -- ============================================================
     IF NEW.alc <= 0 THEN NEW.alc := NULL; END IF;
+    -- ============================================================
+    --  SOLIDOS TOTALES DISUELTOS (ceros y negativos a null)
+    -- ============================================================
+
+    IF NEW.tsd <= 10 THEN NEW.tsd := NULL; END IF;
 
     -- Retornamos la fila modificada con todos los campos procesados
     RETURN NEW;
