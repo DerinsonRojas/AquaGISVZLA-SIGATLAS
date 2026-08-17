@@ -1,5 +1,6 @@
 --FUNCIÓN PARA LA REVISIÓN Y VALIDACIÓN DE DATOS INMEDIATA A LA CARGA 
 -- 1. Añadimos las dos columnas nuevas a la tabla física (si no existen ya)
+-- Si se migra la BBDD hay que crear estas columnas en pgAdmin, luego se ejecuta la función
 ALTER TABLE public.pozos_quimica 
 ADD COLUMN IF NOT EXISTS fecha_analisis DATE,
 ADD COLUMN IF NOT EXISTS estado_fecha VARCHAR(20);
@@ -73,6 +74,7 @@ BEGIN
     -- ============================================================
    
     -- PASO 1: LIMPIEZA ABSOLUTA DE PARAMETROS INDIVIDUALES
+    -- Si al cargar el ETL no existiera dtotal, crearlo en pgAdmin
     -- (Convertir Ceros a Nulos primero que todo)
      
     IF NEW.so4 < 0 THEN NEW.so4 := NULL; END IF;
