@@ -1,3 +1,5 @@
+--Índice de Langelier es un parámetro que permite clasificar el agua según su 
+característica corrosiva o incrustante
 SELECT 
     CASE 
         WHEN indice < -3.0 THEN '1. Altamente Corrosivo (Peligro Tuberías)'
