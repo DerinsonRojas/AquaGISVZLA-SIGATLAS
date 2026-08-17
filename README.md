@@ -111,5 +111,5 @@ AquaGISVZLA servirá como base para futuros trabajos de investigación y como pl
 
 🧩 Autor
 Derinson Rojas
-Ingeniero de Geólogo | SIG & ETL Developer
+Ingeniero Geólogo | SIG & ETL Developer
 Proyecto AquaGISVZLA — Modernización hidrogeoespacial de Venezuela.
