@@ -101,8 +101,13 @@ if 'indice' in df.columns:
 # ==========================================
 # 3. CARGA (Persistencia y Restricciones SQL)
 # ==========================================
+ruta_salida =  os.path.join(
+    os.path.dirname(__file__), "..","..",
+      "DATOS_PROCESADOS", 
+      "DATOS_POST_ETL_POZOS_QUIMICA.csv")
+
 print(">> Exportando archivo plano CSV...")
-df.to_csv("24062026_DATOS_LIMPIOS_POZOS_QUIMICA.csv", index=False, encoding="utf-8", sep=";")     
+df.to_csv(ruta_salida, index=False, encoding="utf-8", sep=";")     
 
 print(">> Conectando con PostgreSQL para la carga...")
 load_dotenv()
@@ -115,16 +120,19 @@ DB_NAME = os.getenv('DB_NAME')
 URL_CONEXION = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}'
 engine = create_engine(URL_CONEXION)
 
-# Inyección inicial en base de datos
+# Vaciar tablas pero manteniendo estructura y vistas
+
+with engine.begin() as con:
+    print(">> TRUNCATE TABLE pozos_quimica (manteniendo estructura y vistas)...")
+    con.execute(text("TRUNCATE TABLE public.pozos_quimica;"))
+
 # Inyección inicial en base de datos especificando el tipo para dtotal
 df.to_sql(
     name="pozos_quimica", 
     con=engine, 
     if_exists="append", 
     index=False,
-    dtype={
-        'dtotal': Numeric(10, 2)  # <-- Fuerza a Postgres a crear la columna como numeric(10,2) 
-    }
+   
 )
 
 '''
