@@ -150,6 +150,9 @@ BEGIN
         NEW.estado_ras := 'OK';
     END IF;
 
+    IF NEW.ras IS NULL THEN
+    NEW.estado_ras := 'SIN CLASIFICAR';
+    END IF;
 
     -- Retornamos la fila modificada con todos los campos procesados
     RETURN NEW;
