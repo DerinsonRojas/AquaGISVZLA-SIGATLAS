@@ -103,6 +103,12 @@ BEGIN
 
     IF NEW.tsd <= 10 THEN NEW.tsd := NULL; END IF;
 
+    -- ============================================================
+    --  RAS Relación de adsorción de sodio ( negativos a null)
+    -- ============================================================
+
+    IF NEW.ras <0 THEN NEW.ras := NULL; END IF;
+
     -- Retornamos la fila modificada con todos los campos procesados
     RETURN NEW;
 END;
