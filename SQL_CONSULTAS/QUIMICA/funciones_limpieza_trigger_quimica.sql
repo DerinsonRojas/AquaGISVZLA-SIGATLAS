@@ -101,7 +101,7 @@ BEGIN
     --  SOLIDOS TOTALES DISUELTOS (ceros y negativos a null)
     -- ============================================================
 
-    IF NEW.tsd <= 10 THEN NEW.tsd := NULL; END IF;
+    
 
     -- ============================================================
     --  RAS Relación de adsorción de sodio ( negativos a null)
