@@ -107,7 +107,49 @@ BEGIN
     --  RAS Relación de adsorción de sodio ( negativos a null)
     -- ============================================================
 
-    IF NEW.ras <0 THEN NEW.ras := NULL; END IF;
+    -- ESTADO RAS
+
+    -- Caso general: RAS negativo → inválido
+    IF NEW.ras < 0 THEN
+        NEW.ras := NULL;
+        NEW.estado_ras := 'INVALIDO';
+    END IF;
+
+    -- Caso 1: RAS = 0, Na = 0, Ca+Mg > 0 → SIN_SODIO
+    IF NEW.ras = 0 
+    AND NEW.na = 0 
+    AND (NEW.ca + NEW.mg) > 0 THEN
+        NEW.estado_ras := 'SIN_SODIO';
+    END IF;
+
+    -- Caso 5: RAS = 0, TSD > 1000 → INCONSISTENTE
+    IF NEW.ras = 0 
+    AND NEW.tsd > 1000 THEN
+        NEW.estado_ras := 'INCONSISTENTE';
+    END IF;
+
+    -- Caso general: RAS válido
+    IF NEW.ras IS NOT NULL 
+    AND NEW.ras > 0 THEN
+        NEW.estado_ras := 'OK';
+    END IF;
+
+    -- RAS físicamente imposible
+    IF NEW.ras > 200 THEN
+        NEW.estado_ras := 'ERROR';
+        NEW.ras := NULL;
+    END IF;
+
+    -- RAS sospechoso
+    IF NEW.ras > 40 AND NEW.ras <= 200 THEN
+        NEW.estado_ras := 'SOSPECHOSO';
+    END IF;
+
+    -- RAS válido
+    IF NEW.ras IS NOT NULL AND NEW.ras <= 40 THEN
+        NEW.estado_ras := 'OK';
+    END IF;
+
 
     -- Retornamos la fila modificada con todos los campos procesados
     RETURN NEW;
