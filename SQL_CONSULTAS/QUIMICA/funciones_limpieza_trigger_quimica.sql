@@ -101,57 +101,51 @@ BEGIN
     --  SOLIDOS TOTALES DISUELTOS (ceros y negativos a null)
     -- ============================================================
 
-    
-
+     IF NEW.tsd <= 10 THEN NEW.tsd := NULL; END IF;
++ 
     -- ============================================================
     --  RAS Relación de adsorción de sodio ( negativos a null)
     -- ============================================================
 
+    -- ============================================================
     -- ESTADO RAS
+    -- ============================================================
 
-    -- Caso general: RAS negativo → inválido
-    IF NEW.ras < 0 THEN
-        NEW.ras := NULL;
-        NEW.estado_ras := 'INVALIDO';
-    END IF;
+    -- 1. RAS nulo → sin clasificar
+    IF NEW.ras IS NULL THEN
+        NEW.estado_ras := 'SIN CLASIFICAR';
 
-    -- Caso 1: RAS = 0, Na = 0, Ca+Mg > 0 → SIN_SODIO
-    IF NEW.ras = 0 
-    AND NEW.na = 0 
-    AND (NEW.ca + NEW.mg) > 0 THEN
-        NEW.estado_ras := 'SIN_SODIO';
-    END IF;
+    -- 2. RAS negativo (incluye -1) → error
+    ELSIF NEW.ras < 0 THEN
+        NEW.estado_ras := 'ERROR';
 
-    -- Caso 5: RAS = 0, TSD > 1000 → INCONSISTENTE
-    IF NEW.ras = 0 
-    AND NEW.tsd > 1000 THEN
-        NEW.estado_ras := 'INCONSISTENTE';
-    END IF;
-
-    -- Caso general: RAS válido
-    IF NEW.ras IS NOT NULL 
-    AND NEW.ras > 0 THEN
-        NEW.estado_ras := 'OK';
-    END IF;
-
-    -- RAS físicamente imposible
-    IF NEW.ras > 200 THEN
+    -- 3. RAS físicamente imposible
+    ELSIF NEW.ras > 200 THEN
         NEW.estado_ras := 'ERROR';
         NEW.ras := NULL;
-    END IF;
 
-    -- RAS sospechoso
-    IF NEW.ras > 40 AND NEW.ras <= 200 THEN
+    -- 4. RAS sospechoso
+    ELSIF NEW.ras > 40 AND NEW.ras <= 200 THEN
         NEW.estado_ras := 'SOSPECHOSO';
-    END IF;
 
-    -- RAS válido
-    IF NEW.ras IS NOT NULL AND NEW.ras <= 40 THEN
+    -- 5. RAS válido
+    ELSIF NEW.ras > 0 AND NEW.ras <= 40 THEN
         NEW.estado_ras := 'OK';
-    END IF;
 
-    IF NEW.ras IS NULL THEN
-    NEW.estado_ras := 'SIN CLASIFICAR';
+    -- 6. Caso especial: RAS = 0
+    ELSIF NEW.ras = 0 THEN
+        -- Si Na = 0 y Ca+Mg > 0 → SIN SODIO
+        IF NEW.na = 0 AND (NEW.ca + NEW.mg) > 0 THEN
+            NEW.estado_ras := 'SIN_SODIO';
+
+        -- Si TSD > 1000 → INCONSISTENTE
+        ELSIF NEW.tsd > 1000 THEN
+            NEW.estado_ras := 'INCONSISTENTE';
+
+        -- Si no cumple nada → OK (RAS=0 válido)
+        ELSE
+            NEW.estado_ras := 'OK';
+        END IF;
     END IF;
 
     -- Retornamos la fila modificada con todos los campos procesados
