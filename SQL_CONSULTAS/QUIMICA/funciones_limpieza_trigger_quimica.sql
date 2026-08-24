@@ -94,9 +94,36 @@ BEGIN
     END IF;
 
     -- ============================================================
+    --  FLUORUROS (Corrección de negativos, placeholders y outliers)
+    -- ============================================================
+
+    IF NEW.f IS NOT NULL THEN
+
+        -- 1. Valores negativos o -1 → no físicos
+        IF NEW.f < 0 OR NEW.f = -1 THEN
+            NEW.f := NULL;
+
+        -- 2. Placeholder sistemático del legacy
+        ELSIF NEW.f = 11.11 THEN
+            NEW.f := NULL;
+
+        -- 3. Valores físicamente imposibles (> 50 mg/L)
+        ELSIF NEW.f > 50 THEN
+            NEW.f := NULL;
+
+        -- 4. Valores sospechosos (> 20 mg/L)
+        ELSIF NEW.f > 20 THEN
+            NEW.f := NULL;
+
+        END IF;
+
+    END IF;
+
+    -- ============================================================
     --  ALCALINIDAD (Corrección de ceros y outliers)
     -- ============================================================
     IF NEW.alc <= 0 THEN NEW.alc := NULL; END IF;
+
     -- ============================================================
     --  CLORUROS (Corrección de negativos)
     -- ============================================================
