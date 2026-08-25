@@ -180,6 +180,25 @@ BEGIN
         END IF;
     END IF;
 
+    -- ============================================================
+    --  NITRITOS (NO2) — Corrección de negativos y outliers
+    -- ============================================================
+
+    IF NEW.no2 IS NOT NULL THEN
+
+        -- 1. Valores negativos → no físicos
+        IF NEW.no2 < 0 THEN
+            NEW.no2 := NULL;
+
+        -- 2. Valores mayores a 10 mg/L → fuera del rango hidrogeológico
+        ELSIF NEW.no2 > 10 THEN
+            NEW.no2 := NULL;
+
+        END IF;
+
+    END IF;
+
+
     -- Retornamos la fila modificada con todos los campos procesados
     RETURN NEW;
 END;
