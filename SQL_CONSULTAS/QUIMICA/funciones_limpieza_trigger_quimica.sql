@@ -94,32 +94,6 @@ BEGIN
     END IF;
 
     -- ============================================================
-    --  FLUORUROS (Corrección de negativos, placeholders y outliers)
-    -- ============================================================
-
-    IF NEW.f IS NOT NULL THEN
-
-        -- 1. Valores negativos o -1 → no físicos
-        IF NEW.f < 0 OR NEW.f = -1 THEN
-            NEW.f := NULL;
-
-        -- 2. Placeholder sistemático del legacy
-        ELSIF NEW.f = 11.11 THEN
-            NEW.f := NULL;
-
-        -- 3. Valores físicamente imposibles (> 50 mg/L)
-        ELSIF NEW.f > 50 THEN
-            NEW.f := NULL;
-
-        -- 4. Valores sospechosos (> 20 mg/L)
-        ELSIF NEW.f > 20 THEN
-            NEW.f := NULL;
-
-        END IF;
-
-    END IF;
-
-    -- ============================================================
     --  ALCALINIDAD (Corrección de ceros y outliers)
     -- ============================================================
     IF NEW.alc <= 0 THEN NEW.alc := NULL; END IF;
@@ -181,21 +155,183 @@ BEGIN
     END IF;
 
     -- ============================================================
-    --  NITRITOS (NO2) — Corrección de negativos y outliers
+    --  FLUOR (F) — negativos, placeholder y outliers
     -- ============================================================
+    IF NEW.f IS NOT NULL THEN
+        IF NEW.f < 0 OR NEW.f = -1 THEN
+            NEW.f := NULL;
+        ELSIF NEW.f = 11.11 THEN
+            NEW.f := NULL;
+        ELSIF NEW.f > 50 THEN
+            NEW.f := NULL;
+        ELSIF NEW.f > 20 THEN
+            NEW.f := NULL;
+        END IF;
+    END IF;
 
+    -- ============================================================
+    --  NITRITOS (NO2) — negativos y >10
+    -- ============================================================
     IF NEW.no2 IS NOT NULL THEN
-
-        -- 1. Valores negativos → no físicos
         IF NEW.no2 < 0 THEN
             NEW.no2 := NULL;
-
-        -- 2. Valores mayores a 10 mg/L → fuera del rango hidrogeológico
         ELSIF NEW.no2 > 10 THEN
             NEW.no2 := NULL;
-
         END IF;
+    END IF;
 
+    -- ============================================================
+    --  NITRATOS (NO3) — negativos y >200
+    -- ============================================================
+    IF NEW.no3 IS NOT NULL THEN
+        IF NEW.no3 < 0 THEN
+            NEW.no3 := NULL;
+        ELSIF NEW.no3 > 200 THEN
+            NEW.no3 := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  SILICE (SiO2) — negativos y >100
+    -- ============================================================
+    IF NEW.sio2 IS NOT NULL THEN
+        IF NEW.sio2 < 0 THEN
+            NEW.sio2 := NULL;
+        ELSIF NEW.sio2 > 100 THEN
+            NEW.sio2 := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  BICARBONATO (HCO3) — negativos y >500
+    -- ============================================================
+    IF NEW.hco3 IS NOT NULL THEN
+        IF NEW.hco3 < 0 THEN
+            NEW.hco3 := NULL;
+        ELSIF NEW.hco3 > 500 THEN
+            NEW.hco3 := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  CARBONATO (CO3) — negativos y >50
+    -- ============================================================
+    IF NEW.co3 IS NOT NULL THEN
+        IF NEW.co3 < 0 THEN
+            NEW.co3 := NULL;
+        ELSIF NEW.co3 > 50 THEN
+            NEW.co3 := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  HIERRO (Fe) — negativos y >10
+    -- ============================================================
+    IF NEW.fe IS NOT NULL THEN
+        IF NEW.fe < 0 THEN
+            NEW.fe := NULL;
+        ELSIF NEW.fe > 10 THEN
+            NEW.fe := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  MANGANESO (Mn) — negativos y >5
+    -- ============================================================
+    IF NEW.mn IS NOT NULL THEN
+        IF NEW.mn < 0 THEN
+            NEW.mn := NULL;
+        ELSIF NEW.mn > 5 THEN
+            NEW.mn := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  BORO (B) — negativos y >10
+    -- ============================================================
+    IF NEW.b IS NOT NULL THEN
+        IF NEW.b < 0 THEN
+            NEW.b := NULL;
+        ELSIF NEW.b > 10 THEN
+            NEW.b := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  DUREZA CALCICA (DUCA) — negativos y >500
+    -- ============================================================
+    IF NEW.duca IS NOT NULL THEN
+        IF NEW.duca < 0 THEN
+            NEW.duca := NULL;
+        ELSIF NEW.duca > 500 THEN
+            NEW.duca := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  SODIO (Na) — negativos y >500
+    -- ============================================================
+    IF NEW.na IS NOT NULL THEN
+        IF NEW.na < 0 THEN
+            NEW.na := NULL;
+        ELSIF NEW.na > 500 THEN
+            NEW.na := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  POTASIO (K) — negativos y >50
+    -- ============================================================
+    IF NEW.k IS NOT NULL THEN
+        IF NEW.k < 0 THEN
+            NEW.k := NULL;
+        ELSIF NEW.k > 50 THEN
+            NEW.k := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  COBRE (Cu) — negativos y >5
+    -- ============================================================
+    IF NEW.cu IS NOT NULL THEN
+        IF NEW.cu < 0 THEN
+            NEW.cu := NULL;
+        ELSIF NEW.cu > 5 THEN
+            NEW.cu := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  ZINC (Zn) — negativos y >10
+    -- ============================================================
+    IF NEW.zn IS NOT NULL THEN
+        IF NEW.zn < 0 THEN
+            NEW.zn := NULL;
+        ELSIF NEW.zn > 10 THEN
+            NEW.zn := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  PLOMO (Pb) — negativos y >1
+    -- ============================================================
+    IF NEW.pb IS NOT NULL THEN
+        IF NEW.pb < 0 THEN
+            NEW.pb := NULL;
+        ELSIF NEW.pb > 1 THEN
+            NEW.pb := NULL;
+        END IF;
+    END IF;
+
+    -- ============================================================
+    --  FOSFATOS (PO4) — negativos y >20
+    -- ============================================================
+    IF NEW.po4 IS NOT NULL THEN
+        IF NEW.po4 < 0 THEN
+            NEW.po4 := NULL;
+        ELSIF NEW.po4 > 20 THEN
+            NEW.po4 := NULL;
+        END IF;
     END IF;
 
 
