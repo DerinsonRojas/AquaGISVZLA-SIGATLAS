@@ -45,6 +45,12 @@ BEGIN
     -- El día va de 01 a 31: (0[1-9]|[1-2][0-9]|3[0-1])
     -- El mes va de 01 a 12: (0[1-9]|1[0-2])
     -- El año son dos dígitos: [0-9]{2}
+
+    --La columna fecha es un campo legacy del sistema original.
+    --La columna correcta y validada es fecha_analisis.
+    --Para análisis hidrogeoquímicos, siempre usar fecha_analisis.
+
+Esto evita confusiones sin tocar la tabla.
     
     IF NEW.fecha IS NOT NULL 
        AND NEW.fecha ~ '^(0[1-9]|[1-2][0-9]|3[0-1])(0[1-9]|1[0-2])[0-9]{2}$' THEN

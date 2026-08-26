@@ -70,34 +70,6 @@ total_nulos = df['act_quimi'].isna().sum()
 if total_nulos > 0:
     print(f">>Atención: {total_nulos} valores en 'act_quimi' no pudieron convertirse a fecha y se han convertido en NaT.")
 
-#2.4. Estandarización para la columna fecha
-#Para optimizar la columna fecha se realizo una view en postgresSQL
-
-# 2.5. Normalización de entrada de valores de conductividad para que valores 
-# negativos sean tratados como nan y determinar cuantos negativos aparecen
-
-if 'conductividad_us_cm' in df.columns:
-    # Contamos cuántos valores son menores a 0
-    conteo_errores = (df['conductividad_us_cm'] < 0).sum()
-    
-    if conteo_errores > 0:
-        print(f">>Atención: Se detectaron {conteo_errores} valores negativos en 'conductividad_us_cm'. Serán convertidos a NA.")
-        # Aplicamos la limpieza
-        df.loc[df['conductividad_us_cm'] < 0, 'conductividad_us_cm'] = pd.NA
-    else:
-        print("Columna 'conductividad_us_cm' limpia: No se encontraron valores negativos.") 
-
-#2.6. Normalización de los valores de indice 
-if 'indice' in df.columns:
-    # Capturamos el 999.9 (o cualquier valor absurdamente alto, por ejemplo > 15)
-    valores_basura = (df['indice'] > 15).sum()
-    
-    if valores_basura > 0:
-        print(f">>Atención: Se detectaron {valores_basura} valores basura (placeholders 999.9) en 'indice'. Serán convertidos a NA.")
-        df.loc[df['indice'] > 15, 'indice'] = pd.NA
-    else:
-        print(" Columna 'indice' libre de valores placeholder altos.")
-
 # ==========================================
 # 3. CARGA (Persistencia y Restricciones SQL)
 # ==========================================
