@@ -98,4 +98,4 @@ df.to_sql(
     index=False
 )
 
-print(">> ETL pozos_litologia ejecutado con éxito. Lógica de negocio aplicada por trigger.")
+print(">> ETL pozos_litologia ejecutado con éxito.")
