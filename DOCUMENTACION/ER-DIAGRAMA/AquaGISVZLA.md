@@ -42,4 +42,4 @@ pozos_master (PK)
 └── pozos_fisicos (FK) → 1:1
 
 Nueva vista para QGIS:
-v_pozos_lacanoa_corregido_qgis → vista espacial optimizada con husos UTM
+v_pozos_geometria_corregidaWGS84_qgis → vista espacial optimizada con husos UTM
