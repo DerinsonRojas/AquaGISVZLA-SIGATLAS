@@ -1,7 +1,7 @@
 --La creación ed esta vista permite generar un archivo shapefile de pozos con geometría en QGIS, 
 a partir de la información de la tabla pozos_master.
 
-CREATE OR REPLACE VIEW public.v_pozos_lacanoa AS
+CREATE OR REPLACE VIEW public.v_pozos_geometria_corregidaWGS84_qgis AS
 SELECT 
     p.*,
     ST_SetSRID(
