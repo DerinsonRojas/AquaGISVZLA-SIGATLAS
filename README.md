@@ -1,5 +1,7 @@
 🌎 AquaGISVZLA: Plataforma Hidrogeoespacial de Pozos de Agua de Venezuela
+
 📌 Descripción del Proyecto
+
 AquaGISVZLA es un sistema moderno de ingeniería de datos y análisis hidrogeoespacial diseñado para la limpieza, normalización, migración y visualización de registros históricos de pozos profundos de agua subterránea en Venezuela.
 
 El proyecto reconstruye y moderniza una base de datos legacy generada por el antiguo Ministerio del Ambiente de Venezuela (activo hasta 2006), cuyos registros fueron utilizados durante décadas en:
@@ -78,12 +80,19 @@ AquaGISVZLA	Sistema hidrogeoespacial
   - **.gitignore**
 
 🔁 Flujo de Trabajo
+
 plaintext
+
 1️⃣ Actualizar funciones PL/pgSQL (si hay nuevas reglas)
+
 2️⃣ Ejecutar ETL (TRUNCATE + APPEND) para cargar datos limpios
+
 3️⃣ Verificar la vista espacial en QGIS (v_pozos_geometria_corregidaWGS84_qgis)
+
 4️⃣ Validar integridad relacional (huérfanos, claves foráneas)
+
 5️⃣ Commit + Push al repositorio
+
 
 🧭 Origen de la Data Legacy
 La base de datos original proviene del Ministerio del Ambiente de Venezuela, responsable de la gestión hídrica y ambiental del país hasta 2006.

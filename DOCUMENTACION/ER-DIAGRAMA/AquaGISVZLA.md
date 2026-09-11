@@ -44,7 +44,3 @@ A partir de v1.5, el modelo relacional queda completamente enlazado:
   - **pozos_litologia_limpios** (FK → 1:N)
   - **pozos_nivel_limpios** (FK → 1:N)
   - **pozos_fisicos** (FK → 1:1)
-
-
-Nueva vista para QGIS:
-v_pozos_geometria_corregidaWGS84_qgis → vista espacial optimizada con husos UTM
