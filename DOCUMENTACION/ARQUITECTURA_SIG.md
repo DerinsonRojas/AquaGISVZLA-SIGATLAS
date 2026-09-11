@@ -118,8 +118,7 @@ SELECT
                     WHEN UPPER(TRIM(p.estado)) IN (
                         'FALCON', 'MERIDA', 'BARINAS', 'PORTUGUESA', 
                         'LARA', 'TRUJILLO', 'CARABOBO', 'COJEDES', 'ARAGUA', 
-                        'VARGAS', 'LA GUAIRA', 'YARACUY', 'DISTRITO CAPITAL',
-                        'DISTRITO FEDERAL', 'DF', 'MIRANDA'
+                        'VARGAS', 'LA GUAIRA', 'YARACUY', 'DISTRITO CAPITAL', 'MIRANDA'
                     ) THEN 24719
 
                     -- HUSO 20N (Unihuso)
