@@ -1,7 +1,10 @@
---La creación ed esta vista permite generar un archivo shapefile de pozos con geometría en QGIS, 
-a partir de la información de la tabla pozos_master.
+--Vista para realizar la auditoría de los pozos que tengan mal su ubicación
+--Es el resultado de la intersección de pozos_master con los pozos fuera del área de Venezuela
+--Los pozos que están fuera de el estado de su nombre
+--Y los pozos correcto
+--La nueva columna auditoria_estado permitira vizualizar en qgis cuales pozos realmente deben reubicarse y cuales no
 
-CREATE OR REPLACE VIEW public.v_pozos_geometria_corregidawgs84_qgis AS
+CREATE OR REPLACE VIEW public.v_pozos_wgs84_auditoria_ubicacion_qgis AS
 SELECT 
     p.id_pozo,
     p.municipio,
@@ -14,6 +17,7 @@ SELECT
     p.este_m,
     p.estado,
     p.tiene_geometria,
+    p.auditoria_estado,
 
 
     -- Geometría calculada según huso UTM correcto
@@ -64,7 +68,6 @@ SELECT
                               OR p.longitud::text LIKE '72%' THEN 24718
                             WHEN p.longitud::text LIKE '71%' 
                               OR p.longitud::text LIKE '70%' THEN 24719
-                            WHEN p.este_m < 500000 THEN 24718
                             ELSE 24719
                         END
 
