@@ -1,13 +1,26 @@
 --La creación ed esta vista permite generar un archivo shapefile de pozos con geometría en QGIS, 
 a partir de la información de la tabla pozos_master.
 
-CREATE OR REPLACE VIEW public.v_pozos_geometria_corregidaWGS84_qgis AS
+CREATE OR REPLACE VIEW public.v_pozos_geometria_corregidawgs84_qgis AS
 SELECT 
-    p.*,
+    p.id_pozo,
+    p.municipio,
+    p.sitio,
+    p.nombre,
+    p.latitud,
+    p.longitud,
+    p.propietario,
+    p.norte_m,
+    p.este_m,
+    p.estado,
+    p.tiene_geometria,
+
+
+    -- Geometría calculada según huso UTM correcto
     ST_SetSRID(
         ST_Transform(
             ST_SetSRID(
-                ST_MakePoint(p.este_m, p.norte_m), 
+                ST_MakePoint(p.este_m, p.norte_m),
                 CASE 
                     -- DELTA AMACURO (Transición 20N / 21N)
                     WHEN UPPER(TRIM(p.estado)) = 'DELTA AMACURO' THEN
@@ -77,12 +90,13 @@ SELECT
                         'SUCRE', 'NUEVA ESPARTA', 'ANZOATEGUI', 'MONAGAS'
                     ) THEN 24720
                 END
-            ), 
+            ),
             4326
         ),
         4326
     )::geometry(Point, 4326) AS geom
+
 FROM public.pozos_master p
-WHERE p.tiene_geometria = TRUE 
-  AND p.este_m IS NOT NULL 
+WHERE p.tiene_geometria = TRUE
+  AND p.este_m IS NOT NULL
   AND p.norte_m IS NOT NULL;

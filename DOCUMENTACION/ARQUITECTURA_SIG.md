@@ -51,13 +51,27 @@ ST_Transform → Convierte la geometría a WGS84 (EPSG:4326).
 Esto garantiza compatibilidad total con QGIS y con cualquier sistema global.
 3.1. Vista espacial final (SQL oficial)
 –BLOQUE SQL PARA LA CREACIÓN DE LA VISTA FINAL 
-CREATE OR REPLACE VIEW v_pozos_geometria_corregidaWGS84_qgis AS
+
+CREATE OR REPLACE VIEW public.v_pozos_geometria_corregidawgs84_qgis AS
 SELECT 
-    p.*,
+    p.id_pozo,
+    p.municipio,
+    p.sitio,
+    p.nombre,
+    p.latitud,
+    p.longitud,
+    p.propietario,
+    p.norte_m,
+    p.este_m,
+    p.estado,
+    p.tiene_geometria,
+
+
+    -- Geometría calculada según huso UTM correcto
     ST_SetSRID(
         ST_Transform(
             ST_SetSRID(
-                ST_MakePoint(p.este_m, p.norte_m), 
+                ST_MakePoint(p.este_m, p.norte_m),
                 CASE 
                     -- DELTA AMACURO (Transición 20N / 21N)
                     WHEN UPPER(TRIM(p.estado)) = 'DELTA AMACURO' THEN
@@ -101,7 +115,6 @@ SELECT
                               OR p.longitud::text LIKE '72%' THEN 24718
                             WHEN p.longitud::text LIKE '71%' 
                               OR p.longitud::text LIKE '70%' THEN 24719
-                            WHEN p.este_m < 500000 THEN 24718
                             ELSE 24719
                         END
 
@@ -118,7 +131,8 @@ SELECT
                     WHEN UPPER(TRIM(p.estado)) IN (
                         'FALCON', 'MERIDA', 'BARINAS', 'PORTUGUESA', 
                         'LARA', 'TRUJILLO', 'CARABOBO', 'COJEDES', 'ARAGUA', 
-                        'VARGAS', 'LA GUAIRA', 'YARACUY', 'DISTRITO CAPITAL', 'MIRANDA'
+                        'VARGAS', 'LA GUAIRA', 'YARACUY', 'DISTRITO CAPITAL',
+                        'DISTRITO FEDERAL', 'DF', 'MIRANDA'
                     ) THEN 24719
 
                     -- HUSO 20N (Unihuso)
@@ -126,15 +140,17 @@ SELECT
                         'SUCRE', 'NUEVA ESPARTA', 'ANZOATEGUI', 'MONAGAS'
                     ) THEN 24720
                 END
-            ), 
+            ),
             4326
         ),
         4326
     )::geometry(Point, 4326) AS geom
+
 FROM public.pozos_master p
-WHERE p.tiene_geometria = TRUE 
-  AND p.este_m IS NOT NULL 
+WHERE p.tiene_geometria = TRUE
+  AND p.este_m IS NOT NULL
   AND p.norte_m IS NOT NULL;
+
 
 3.2. Características de la vista
 Geometría válida en formato Point.
