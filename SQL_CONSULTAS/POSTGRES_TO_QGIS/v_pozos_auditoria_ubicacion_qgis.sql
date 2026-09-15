@@ -3,7 +3,7 @@
 --Los pozos que están fuera de el estado de su nombre
 --Y los pozos correcto
 --La nueva columna auditoria_estado permitira vizualizar en qgis cuales pozos realmente deben reubicarse y cuales no
-
+--Esta vista fue útil hasta el 15092026, ahora esta como registro y se debe usar la indicada en POZOS_TO_QGIS.SQL
 CREATE OR REPLACE VIEW public.v_pozos_wgs84_auditoria_ubicacion_qgis AS
 SELECT 
     p.id_pozo,

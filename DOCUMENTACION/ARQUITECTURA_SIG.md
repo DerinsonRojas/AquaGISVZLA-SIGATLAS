@@ -52,7 +52,7 @@ Esto garantiza compatibilidad total con QGIS y con cualquier sistema global.
 3.1. Vista espacial final (SQL oficial)
 –BLOQUE SQL PARA LA CREACIÓN DE LA VISTA FINAL 
 
-CREATE OR REPLACE VIEW public.v_pozos_geometria_corregidawgs84_qgis AS
+CREATE OR REPLACE VIEW public.v_pozos_wgs84_auditoria_ubicacion_qgis AS
 SELECT 
     p.id_pozo,
     p.municipio,
@@ -65,6 +65,12 @@ SELECT
     p.este_m,
     p.estado,
     p.tiene_geometria,
+    p.auditoria_estado --Permite clasificar los pozos según su calidad de ubicación y clasificación en QGIS
+                        --('OK' Para los que estan bien)
+                       -- 'NO_COINCIDE_LIMITROFE' Pozos con nombre diferente a su ubicación pero en zona limitrofe, se toman como buenos
+                       -- 'NO_COINCIDE_REAL' Pozos que tienen se ubican muy lejos de donde indica su id_pozo
+                       -- 'FUERA_DE_VENEZUELA' Pozos que intersectados con el shapefile de Venezuela quedan completamente fuera del territorio nacional
+                       -- Algunos de los pozos fuera son útiles pero hay que revisar cada caso puntualmente
 
 
     -- Geometría calculada según huso UTM correcto
