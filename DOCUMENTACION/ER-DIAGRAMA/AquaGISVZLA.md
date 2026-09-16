@@ -14,7 +14,7 @@
                                             │
                                             ▼
        ┌──────────────────────────┐           ┌──────────────────────────┐
-       │      pozos_quimica       │           │     pozos_litologia_limpios │
+       │      pozos_quimica       │           │ pozos_litologia_limpios │
        │──────────────────────────│           │──────────────────────────│
        │ id_pozo (FK)             │           │ id_pozo (FK)             │
        │ fecha_analisis           │           │ desde, hasta             │
@@ -30,12 +30,22 @@
        │ nivel_estatico_m         │           │ prof_entubado_m          │
        │ nivel_dinamico_m         │           │ diametro_superior_in     │
        │ gasto_l_s                │           │ diametro_inferior_in     │
-       └──────────────────────────┘           └──────────────────────────┘
+       └──────────────┬───────────┘           └──────────────┬───────────┘
+                      │ 1:1                   │ 1:1
+                      ▼                       ▼
+       ┌──────────────────────────┐
+       │      pozos_grados_decimales_wgs84         
+       │──────────────────────────│
+       │ id_pozo (FK)             │
+       │ lat_dd                   │
+       │ lon_dd                   │
+       │ geom_wgs84               │
+       └──────────────────────────┘
 
 ───────────────────────────────────────────────────────────────────────────────
 A partir de v1.5, el modelo relacional queda completamente enlazado:
 
-### Estructura Relacional Consolidada
+A partir de v1.6.2, el modelo relacional queda como esta ahora:
 
 ### Estructura Relacional Consolidada
 
@@ -44,3 +54,4 @@ A partir de v1.5, el modelo relacional queda completamente enlazado:
   - **pozos_litologia_limpios** (FK → 1:N)
   - **pozos_nivel_limpios** (FK → 1:N)
   - **pozos_fisicos** (FK → 1:1)
+  - **pozos_grados_decimales_wgs84** (FK → 1:1) --Pozo en grados decimales (dd=decimal degrees)
