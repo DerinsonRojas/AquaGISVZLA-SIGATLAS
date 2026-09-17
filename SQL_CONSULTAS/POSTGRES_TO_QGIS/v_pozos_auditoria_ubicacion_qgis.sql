@@ -18,6 +18,7 @@ SELECT
     p.estado,
     p.tiene_geometria,
     p.auditoria_estado,
+    p.altitud_msnm,
 
 
     -- Geometría calculada según huso UTM correcto
