@@ -14,7 +14,7 @@
                                             │
                                             ▼
        ┌──────────────────────────┐           ┌──────────────────────────┐
-       │      pozos_quimica       │           │ pozos_litologia_limpios │
+       │      pozos_quimica       │           │ pozos_litologia          │
        │──────────────────────────│           │──────────────────────────│
        │ id_pozo (FK)             │           │ id_pozo (FK)             │
        │ fecha_analisis           │           │ desde, hasta             │
@@ -23,7 +23,7 @@
                       │ 1:N                   │ 1:N
                       ▼                       ▼
        ┌──────────────────────────┐           ┌──────────────────────────┐
-       │     pozos_nivel_limpios  │           │     pozos_fisicos        │
+       │     pozos_nivel          │           │     pozos_fisicos        │
        │──────────────────────────│           │──────────────────────────│
        │ id_pozo (FK)             │           │ id_pozo (FK)             │
        │ fecha_medicion           │           │ prof_perforacion_m       │
@@ -51,7 +51,7 @@ A partir de v1.6.2, el modelo relacional queda como esta ahora:
 
 - **pozos_master** (PK)
   - **pozos_quimica** (FK → 1:N)
-  - **pozos_litologia_limpios** (FK → 1:N)
-  - **pozos_nivel_limpios** (FK → 1:N)
+  - **pozos_litologia** (FK → 1:N)
+  - **pozos_nivel** (FK → 1:N)
   - **pozos_fisicos** (FK → 1:1)
   - **pozos_grados_decimales_wgs84** (FK → 1:1) --Pozo en grados decimales (dd=decimal degrees)

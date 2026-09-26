@@ -38,7 +38,6 @@ legacy → datos originales sin procesar
 2. Ejemplos correctos 
 Tipo	Ejemplo	Descripción
 Tabla principal	pozos_master	Tabla base con identificación y ubicación.
-Tabla derivada	pozos_litologia_limpios	Litología depurada y validada.
 Tabla auxiliar	pozos_nivel_huerfanos	Registros sin relación con master.
 Tabla de referencia	catalogo_rocas	Catálogo de tipos de roca.
 Tabla de auditoría	auditoria_quimica	Registro de validaciones químicas.

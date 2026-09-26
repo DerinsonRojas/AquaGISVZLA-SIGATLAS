@@ -21,20 +21,19 @@ No se creó una tabla nueva debido a la complejidad de la entidad y sus reglas d
 Mantener la tabla original evita romper el ETL que inyectará datos en el futuro.
 
 3. pozos_litologia y pozos_nivel
-Tenían menor complejidad estructural.
+Tenían menor complejidad estructural aún así se pudo automatizar su depurado.
 
 Se separaron huérfanos sin afectar la lógica del sistema.
 
-Se crearon tablas _limpios y _huerfanos para mantener la original y disponer de datos depurados para análisis.
+Se creó tabla _huerfanos para mantener datos de la tabla original que no tienen correspondiente en pozos master.
 
-No requieren triggers ni funciones, por lo que crear tablas nuevas fue la opción más limpia.
+Se habilitaron triggers y funciones, para automatizar la limpieza y depuración tras la inyección de datos.
 
 4. Tabla de datos físicos de pozo pozos_fisicos
 
 En la tabla pozos_master tenemos datos de propiedades física y de entubación que no identifican al pozo sino que responden a características físicas, por eso se ha creado esta tabla auxiliar. Para consultar solo este tipo de información sin ver a pozos_master entero.
 
 5. Relación entre tablas
-Las tablas derivadas (_limpios) contienen registros con FK válida hacia pozos_master.
 
 Las tablas _huerfanos contienen registros sin correlación.
 
