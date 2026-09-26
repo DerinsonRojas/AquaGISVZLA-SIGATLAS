@@ -7,20 +7,20 @@
 --   4. Evitar duplicados con fecha diferente.
 
 
-CREATE OR REPLACE FUNCTION limpiar_litologia_huerfanos()
+CREATE OR REPLACE FUNCTION fn_etl_pozos_litologia_limpios()
 RETURNS TRIGGER AS $$
+DECLARE
+    fecha_dominante DATE;
 BEGIN
--- Regla:Si el pozo no existe en master
+    -- Regla: Si el pozo no existe en master
     IF NOT EXISTS (
         SELECT 1 FROM public.pozos_master
         WHERE id_pozo = NEW.id_pozo
     ) THEN
-        
-        -- Evitar que entre en litología
         RETURN NULL;
     END IF;
 
---Regla: Eliminar registros que despues de la litologia tienen espacios y al final de los espacios la letra X en mayúscula
+    -- Regla: Eliminar registros que después de la litología tienen espacios y al final la letra X
     NEW.litologia := TRIM(
         REGEXP_REPLACE(
             NEW.litologia,
@@ -30,28 +30,25 @@ BEGIN
         )
     );
 
--- Regla: La litología no puede ser nula
-        IF NEW.litologia IS NULL THEN
-            RETURN NULL;
-        END IF;
+    -- Regla: La litología no puede ser nula
+    IF NEW.litologia IS NULL THEN
+        RETURN NULL;
+    END IF;
 
--- Regla: evitar duplicados con fecha diferente
-IF EXISTS (
-    SELECT 1
-    FROM public.pozos_litologia
-    WHERE id_pozo = NEW.id_pozo
-      AND desde = NEW.desde
-      AND hasta = NEW.hasta
-      AND litologia = NEW.litologia
-      AND act_litologia <> NEW.act_litologia
-) THEN
-    RETURN NULL;
-END IF;
+    -- Regla: evitar duplicados con fecha diferente
+    IF EXISTS (
+        SELECT 1
+        FROM public.pozos_litologia
+        WHERE id_pozo = NEW.id_pozo
+          AND desde = NEW.desde
+          AND hasta = NEW.hasta
+          AND litologia = NEW.litologia
+          AND act_litologia <> NEW.act_litologia
+    ) THEN
+        RETURN NULL;
+    END IF;
 
--- Regla: unificar fecha según mayoría
-DECLARE
-    fecha_dominante DATE;
-BEGIN
+    -- Regla: unificar fecha según mayoría
     SELECT act_litologia
     INTO fecha_dominante
     FROM public.pozos_litologia

@@ -206,3 +206,4 @@ transformaciones PSAD56 → WGS84,
 vista espacial final para QGIS,
 estado actual y próximos pasos.
 Es la base para cualquier expansión futura del sistema espacial.
+
