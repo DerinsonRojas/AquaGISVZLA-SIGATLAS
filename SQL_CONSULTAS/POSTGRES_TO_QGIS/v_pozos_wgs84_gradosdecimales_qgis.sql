@@ -33,7 +33,7 @@ SELECT
     EXISTS (SELECT 1 FROM public.pozos_quimica q WHERE q.id_pozo = m.id_pozo) AS tiene_quimica,
     EXISTS (SELECT 1 FROM public.pozos_litologia_limpios l WHERE l.id_pozo = m.id_pozo) AS tiene_litologia,
     EXISTS (SELECT 1 FROM public.pozos_nivel_limpios n WHERE n.id_pozo = m.id_pozo) AS tiene_niveles,
-    EXISTS (SELECT 1 FROM public.pozos_fisicos f WHERE f.id_pozo = m.id_pozo) AS tiene_fisicos
+    EXISTS (SELECT 1 FROM public.pozos_datos_tecnicos d WHERE d.id_pozo = m.id_pozo) AS tiene_datos_tecnicos
 
 FROM public.pozos_master AS m
 INNER JOIN public.pozos_grados_decimales_wgs84 AS g 
