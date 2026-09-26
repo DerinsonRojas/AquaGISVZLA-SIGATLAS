@@ -19,39 +19,49 @@
        │ id_pozo (FK)             │           │ id_pozo (FK)             │
        │ fecha_analisis           │           │ desde, hasta             │
        │ ph, ce, na, k, etc.      │           │ litologia                │
+       │ FK: fk_pozos_quimica_master │        │ FK: fk_pozos_litologia_master │
        └──────────────┬───────────┘           └──────────────┬───────────┘
                       │ 1:N                   │ 1:N
                       ▼                       ▼
        ┌──────────────────────────┐           ┌──────────────────────────┐
-       │     pozos_nivel          │           │     pozos_fisicos        │
+       │     pozos_nivel          │           │ pozos_datos_tecnicos     │
        │──────────────────────────│           │──────────────────────────│
        │ id_pozo (FK)             │           │ id_pozo (FK)             │
        │ fecha_medicion           │           │ prof_perforacion_m       │
        │ nivel_estatico_m         │           │ prof_entubado_m          │
        │ nivel_dinamico_m         │           │ diametro_superior_in     │
        │ gasto_l_s                │           │ diametro_inferior_in     │
+       │ FK: fk_pozos_nivel_master│           │ FK: fk_pozos_datos_tecnicos_master │
        └──────────────┬───────────┘           └──────────────┬───────────┘
                       │ 1:1                   │ 1:1
                       ▼                       ▼
        ┌──────────────────────────┐
-       │      pozos_grados_decimales_wgs84         
+       │ pozos_grados_decimales_wgs84 │
        │──────────────────────────│
        │ id_pozo (FK)             │
-       │ lat_dd                   │
-       │ lon_dd                   │
+       │ lat_dd, lon_dd           │
        │ geom_wgs84               │
+       │ FK: fk_pozos_grados_decimales_master │
        └──────────────────────────┘
 
-───────────────────────────────────────────────────────────────────────────────
-A partir de v1.5, el modelo relacional queda completamente enlazado:
+Actualización correspondiente a v1.7
 
-A partir de v1.6.2, el modelo relacional queda como esta ahora:
+pozos_master (PK)
+│
+├── pozos_quimica (1:N)
+├── pozos_litologia (1:N)
+├── pozos_nivel (1:N)
+├── pozos_datos_tecnicos (1:1)
+└── pozos_grados_decimales_wgs84 (1:1)
 
-### Estructura Relacional Consolidada
+Vistas:
+- v_pozos_relaciones (auditoría relacional)
+- v_pozos_wgs84_auditoria_ubicacion_qgis (auditoría espacial)
+- v_pozos_grados_decimales_wgs84 (vista espacial optimizada)
 
-- **pozos_master** (PK)
-  - **pozos_quimica** (FK → 1:N)
-  - **pozos_litologia** (FK → 1:N)
-  - **pozos_nivel** (FK → 1:N)
-  - **pozos_fisicos** (FK → 1:1)
-  - **pozos_grados_decimales_wgs84** (FK → 1:1) --Pozo en grados decimales (dd=decimal degrees)
+Integridad:
+- 0 huérfanos
+- Sin CASCADE
+- Triggers ETL activos
+- Compatible con QGIS y visor web (v2.0)
+

@@ -6,7 +6,7 @@ WHERE id_pozo NOT IN (
 
 --Trigger para limpiar de huerfanos en futuras inserciones
 
-CREATE TRIGGER trg_litologia_huerfanos
+CREATE TRIGGER trg_etl_pozos_litologia_limpios
 BEFORE INSERT OR UPDATE ON public.pozos_litologia
 FOR EACH ROW
-EXECUTE FUNCTION limpiar_litologia_huerfanos();
+EXECUTE FUNCTION fn_etl_pozos_litologia_limpios();
