@@ -84,7 +84,7 @@ QGIS	Visualización geoespacial
 Git / GitHub	Control de versiones
 AquaGISVZLA	Sistema hidrogeoespacial
 
-
+```plaintext
 📁 Estructura del Repositorio
 Código
 SIGATLASV1/
@@ -125,6 +125,7 @@ SIGATLASV1/
 │   └── NIVEL/
 │
 └── .gitignore
+```
 🔁 Nuevo Flujo de Trabajo (sin TRUNCATE)
 Código
 1️⃣ Actualizar funciones PL/pgSQL (si hay nuevas reglas)
