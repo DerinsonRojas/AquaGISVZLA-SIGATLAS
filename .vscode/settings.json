@@ -1,0 +1,5 @@
+{
+    "python.terminal.useEnvFile": true,
+
+    "python.defaultInterpreterPath": "C:\\Users\\derin\\Documents\\BBDD POZOS\\SIGATLASV1\\backend\\venv\\Scripts\\python.exe"
+}
