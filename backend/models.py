@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class Pozo(BaseModel):
-    id_pozo: int
+    id_pozo: str
     municipio: Optional[int]
     sitio: Optional[str]
     nombre: Optional[str]
