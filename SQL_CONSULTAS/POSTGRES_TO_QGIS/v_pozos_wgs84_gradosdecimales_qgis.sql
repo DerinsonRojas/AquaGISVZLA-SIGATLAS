@@ -2,7 +2,8 @@
 para cada punto. Como esta vista no tendra que calcular las coordenadas norte, este, a partir de los husos sino que ubica los puntos 
 con grados decimales será notablemente más ágil pensando en el futuro desarrollo del visor web leaflet*/
 
-CREATE OR REPLACE VIEW public.v_pozos_wgs84_gradosdecimales_qgis AS
+CREATE OR REPLACE VIEW public.v_pozos_wgs84_dd_qgis
+ AS
 SELECT 
     m.id_pozo,
     m.municipio,--No es literal es un número de la data legacy
