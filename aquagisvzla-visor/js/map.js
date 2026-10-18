@@ -16,13 +16,31 @@ async function cargarPozos() {
 
         L.geoJSON(geojson, {
             pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, {
-                    radius: 5,
-                    color: 'blue',
-                    fillColor: 'cyan',
-                    fillOpacity: 0.7
-                });
-            },
+    const estado = feature.properties.auditoria_estado;
+    let color = 'gray'; // color por defecto
+
+    switch (estado) {
+        case 'COINCIDE':
+            color = 'green';
+            break;
+        case 'FUERA DE LIMITES':
+            color = 'blue';
+            break;
+        case 'NO COINCIDE':
+            color = 'red';
+            break;
+        case 'SIN ENTIDAD':
+            color = color = '#e6b800';   // amarillo oscuro
+            break;
+    }
+
+    return L.circleMarker(latlng, {
+        radius: 5,
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.7
+    });
+},
 
             onEachFeature: function (feature, layer) {
                 const p = feature.properties;
