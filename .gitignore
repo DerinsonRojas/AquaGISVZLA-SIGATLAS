@@ -1,6 +1,5 @@
 *.mdb
 *.accdb
-*.txt
 *.xlsx
 *.env
 *.db
