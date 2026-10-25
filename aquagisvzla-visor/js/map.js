@@ -30,7 +30,7 @@ async function cargarPozos() {
             color = 'red';
             break;
         case 'SIN ENTIDAD':
-            color = color = '#e6b800';   // amarillo oscuro
+            color = '#ff9900'; // naranja suave
             break;
     }
 
@@ -41,6 +41,7 @@ async function cargarPozos() {
         fillOpacity: 0.7
     });
 },
+
 
             onEachFeature: function (feature, layer) {
                 const p = feature.properties;
