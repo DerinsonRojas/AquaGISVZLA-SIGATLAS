@@ -2,6 +2,20 @@
 
 Este documento registra los cambios más importantes del proyecto AquaGISVZLA por versión, siguiendo buenas prácticas de control de versiones y documentación técnica.
 
+
+## v2.1 - 2026-11-10
+
+### Added
+- Ruta principal (`/`) en FastAPI con respuesta JSON informativa sobre el estado del sistema y acceso a la documentación interactiva (`/docs`).
+- Confirmación y verificación de compatibilidad de despliegue del visor frontend en **GitHub Pages**.
+
+### Improved
+- Enrutamiento REST refactorizado: la consulta de pozos y generación GeoJSON se mantiene exclusivamente en la ruta `/pozos`.
+
+### Fixed
+- Solucionado el error `404 Not Found` en la ruta raíz del backend local (`http://127.0.0.1:8000/`).
+
+---
 ---
 
 ## 🟩 v2.0 — Visor Web Local + Arquitectura Integrada (19/10/2026)
