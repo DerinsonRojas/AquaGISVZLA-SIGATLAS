@@ -13,8 +13,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def read_root():
+    return {
+        "sistema": "Aquagis Backend",
+        "estado": "Operativo",
+        "documentacion_interactiva": "/docs",
+        "recursos": {
+            "pozos_geojson": "/pozos"
+        }
+    }
+
 @app.get("/pozos")
 def get_pozos():
     data = obtener_pozos()
     return pozos_to_geojson(data)
-
