@@ -2,6 +2,17 @@
 
 Este documento registra los cambios más importantes del proyecto AquaGISVZLA por versión, siguiendo buenas prácticas de control de versiones y documentación técnica.
 
+## v2.2 - 2026-11-21
+
+### Added
+- Despliegue completo de la arquitectura desacoplada en producción: base de datos espacial PostgreSQL + PostGIS en **Supabase** (>14.000 pozos), API REST con **FastAPI** en **Render** y visor estático con **Leaflet** en **GitHub Pages**.
+- Conexión segura a Supabase mediante *Connection Pooler* (`sslmode=require`) y gestión de credenciales en el servidor con variables de entorno.
+
+### Improved
+- Consumo directo del endpoint GeoJSON de producción (`https://aquagisvzla-sigatlas-jo7l.onrender.com/pozos`) desde el cliente web (`api.js`), permitiendo iterar en nuevas funcionalidades en local sin afectar la rama estable `main`.
+
+### Fixed
+- Aislamiento definitivo de entornos entre desarrollo local y producción en la nube, consolidando `main` como rama de referencia estable.
 
 ## v2.1 - 2026-11-10
 
