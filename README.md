@@ -1,97 +1,87 @@
-🌎 AquaGISVZLA — Plataforma Hidrogeoespacial de Pozos de Agua de Venezuela
-Sistema moderno de ingeniería de datos, geoprocesamiento y análisis hidrogeoespacial
-AquaGISVZLA es un sistema integral para la depuración, normalización, migración y visualización de registros históricos de pozos profundos de agua subterránea en Venezuela.
-El proyecto moderniza una base de datos legacy del antiguo Ministerio del Ambiente (hasta 2006), utilizada durante décadas en:
+Markdown
+# 🌎 AquaGISVZLA — Plataforma Hidrogeoespacial de Pozos de Agua de Venezuela
 
-tesis de pregrado y postgrado
+**Sistema integral de ingeniería de datos, geoprocesamiento y visualización hidrogeoespacial**
 
-estudios hidrogeológicos
+**AquaGISVZLA** es una plataforma de código abierto para la depuración, normalización, migración, consulta y visualización web de registros históricos de pozos profundos de agua subterránea en Venezuela. El proyecto moderniza una base de datos *legacy* del antiguo Ministerio del Ambiente (hasta 2006), utilizada durante décadas en:
 
-planificación hídrica
+- Tesis de pregrado y postgrado
+- Estudios hidrogeológicos
+- Planificación hídrica
+- Investigaciones científicas
+- Proyectos de gestión territorial
 
-investigaciones científicas
+AquaGISVZLA reconstruye y publica esta información mediante un pipeline ETL en Python, una base de datos espacial PostgreSQL + PostGIS en la nube, una API REST con FastAPI y un visor web interactivo con Leaflet, con proyección hacia análisis estratigráficos y dashboards hidrogeoespaciales avanzados.
 
-proyectos de gestión territorial
+---
 
-AquaGISVZLA reconstruye esta información mediante una arquitectura moderna basada en Python, PostgreSQL, PostGIS y QGIS, con proyección a mapas interactivos, análisis hidrogeológicos y futuros dashboards web.
+## 🚀 Estado Actual del Sistema (Producción)
 
-🚀 Características Técnicas Principales
-🧩 Pipeline ETL profesional (Python + Pandas)
-Limpieza, normalización y estandarización de datos legacy.
+- **Base de Datos Espacial (Supabase):** PostgreSQL + PostGIS (>14.000 pozos), conectada mediante *Connection Pooler* (`sslmode=require`) y con gestión segura de credenciales mediante variables de entorno.
+- **Backend API REST (Render):** Servicio en Python (**FastAPI** + `psycopg2`) desplegado en producción (`https://aquagisvzla-sigatlas-jo7l.onrender.com/pozos`), con ruta raíz (`/`) y documentación interactiva (`/docs`).
+- **Visor Web Interactivo (GitHub Pages):** Aplicación estática con **Leaflet** publicada en GitHub Pages (`https://derinsonrojas.github.io/AquaGISVZLA-SIGATLAS/aquagisvzla-visor/index.html`), consumiendo el GeoJSON directamente desde el endpoint de producción en Render.
+- **Flujo de Versionado:** Rama principal `main` estable en producción, desarrollo de nuevas funcionalidades en ramas `feature/...` y registro de versiones en `CHANGELOG.md` (hasta `v2.2`).
 
-Eliminación de duplicados y corrección de tipos.
+---
 
-Validación estricta de integridad referencial.
+## 🧩 Características Técnicas Principales
 
-Nuevo patrón de carga masiva:  
-STAGING → VALIDACIÓN → SWAP → VERIFICACIÓN  
+### 1. Pipeline ETL Profesional (Python + Pandas)
+- Limpieza, normalización y estandarización de datos *legacy*.
+- Eliminación de duplicados y corrección de tipos de datos.
+- Validación estricta de integridad referencial.
+- Patrón de carga masiva: `STAGING → VALIDACIÓN → SWAP → VERIFICACIÓN`.
 
-🏗️ Modelo Relacional Modernizado
-Separación física de atributos (pozos_master, pozos_quimica, pozos_litologia, pozos_nivel, datos_técnicos).
+### 2. Modelo Relacional Modernizado
+- Separación física de atributos (`pozos_master`, `pozos_quimica`, `pozos_litologia`, `pozos_nivel`, `datos_técnicos`).
+- Claves primarias y foráneas activas (`PK–FK`).
+- Tablas `_limpios` y `_huerfanos` para trazabilidad y auditoría.
 
-Claves primarias y foráneas activas.
+### 3. Geoprocesamiento Avanzado (PostGIS)
+- Interpretación del datum *legacy* La Canoa (`PSAD56` UTM) y transformación precisa a `WGS84` (`EPSG:4326`).
+- Corrección de desplazamientos históricos y generación de geometrías compatibles con QGIS y visores web.
+- Cálculo de altitud de cada pozo a partir del mosaico de elevación **NASADEM** de Venezuela.
+- Vista espacial oficial `v_pozos_wgs84_dd_qgis` (optimizada en grados decimales para QGIS y aplicaciones web).
 
-Tablas _limpios y _huerfanos para trazabilidad.
+### 4. Automatización y Reglas de Negocio
+- Flujo ETL modular por fases y refactorizado sin `TRUNCATE`.
+- Validaciones automáticas en *staging* y *swap* atómico para cargas masivas.
+- Funciones y *triggers* PL/pgSQL para reglas de negocio.
 
-Integridad relacional garantizada.
+### 5. Visor Geoespacial y API REST
+- Endpoint GeoJSON desacoplado en FastAPI (`/pozos`) servido desde Render.
+- Cliente web en Leaflet (`api.js` + `index.html`) desplegado en GitHub Pages, listo para incorporar menús laterales y filtros dinámicos.
 
-🌐 Geoprocesamiento Avanzado (PostGIS)
-Interpretación del datum legacy La Canoa (PSAD56 UTM).
+### 6. Documentación Técnica Profesional
+- Arquitectura SIG y justificación del modelo de tablas y vistas espaciales.
+- Estándares de nombres de tablas y vistas SIG.
+- Manual de ETL, libro blanco (`AquaGISVZLA.md`) y registro de versiones (`CHANGELOG.md`).
 
-Transformación precisa a WGS84 (EPSG:4326).
+---
 
-Corrección de desplazamientos históricos.
+## 🛠️ Stack Tecnológico
 
-Generación de geometrías compatibles con QGIS.
+| Tecnología / Componente | Rol en el Proyecto |
+| :--- | :--- |
+| **Python 3.x + Pandas** | Pipeline ETL, limpieza, validación y transformación de datos |
+| **PostgreSQL + PostGIS (Supabase)** | Base de datos relacional y espacial en la nube con *Connection Pooler* |
+| **FastAPI + psycopg2 (Render)** | API REST desacoplada para servir datos espaciales en formato GeoJSON |
+| **Leaflet + GitHub Pages** | Visor web geoespacial interactivo y alojamiento estático |
+| **QGIS** | Validación espacial, auditoría geométrica y cartografía |
+| **Git / GitHub** | Control de versiones, ramas de trabajo y etiquetas de release |
 
-Calculo de altitud de cada pozo con ubicación a partir de imagen mosaico NASADEM de Venezuela
+---
 
-🗺️ Vista espacial oficial
-v_pozos_wgs84_dd_qgis (Óptimizda en gradOs decimales para mayor rendimiento en QGIS o visores web).
+## 📁 Estructura del Repositorio
 
-Compatible con QGIS y visores web.
-
-⚙️ Automatización del flujo
-ETL modular por fases.
-
-Validaciones automáticas en staging.
-
-Swap atómico para cargas masivas.
-
-Funciones y triggers PL/pgSQL para reglas de negocio.
-
-📚 Documentación técnica profesional
-Incluye:
-
-arquitectura SIG
-
-justificación del modelo relacional
-
-estándares de nombres
-
-justificación de vistas espaciales
-
-manual de ETL
-
-libro blanco del sistema
-
-🛠️ Stack Tecnológico
-Tecnología	Uso
-Python 3.x	Pipeline ETL
-Pandas	Limpieza y transformación
-PostgreSQL + PostGIS	Base de datos relacional y espacial
-QGIS	Visualización geoespacial
-Git / GitHub	Control de versiones
-AquaGISVZLA	Sistema hidrogeoespacial
-
-```plaintext
-📁 Estructura del Repositorio
-Código
+```text
 SIGATLASV1/
 │
-├── BBDD_SIGATLAS/            # Base de datos legacy (Access)
-├── DATOS_ORIGINALES/         # Archivos fuente sin procesar
-├── DATOS_PROCESADOS/         # Resultados del ETL (CSV limpios)
+├── aquagisvzla-visor/          # Visor web estático (Leaflet, HTML/CSS/JS, api.js)
+├── backend/                    # API REST en FastAPI y conexión a PostgreSQL/PostGIS
+├── BBDD_SIGATLAS/              # Base de datos legacy (Access)
+├── DATOS_ORIGINALES/           # Archivos fuente sin procesar
+├── DATOS_PROCESADOS/           # Resultados del ETL (CSV limpios)
 │
 ├── DOCUMENTACION/
 │   ├── 00_INDICE_GENERAL.md
@@ -109,93 +99,53 @@ SIGATLASV1/
 │   │   └── ETL_FASE_3_POZOS_QUIMICA.py
 │   ├── POZOS_LITOLOGIA/
 │   │   └── ETL_FASE_2_POZOS_LITOLOGIA.py
-│   └── POZOS_NIVEL/
+│   ├── POZOS_NIVEL/
 │   │   └── ETL_FASE_2_POZOS_NIVEL.py
-│   └──── POZOS_DATOS_TECNICOS/
+│   └── POZOS_DATOS_TECNICOS/
 │       └── ETL_FASE_2_POZOS_DATOS_TECNICOS.py
 │
-├── GEOESPACIAL/              # Scripts PostGIS, vistas y funciones espaciales
+├── GEOESPACIAL/                # Scripts PostGIS, vistas y funciones espaciales
 │
 ├── SQL_CONSULTAS/
 │   ├── LITOLOGIA/
 │   ├── MASTER/
 │   ├── POSTGRES_TO_QGIS/
-│   └── QUIMICA/
+│   ├── QUIMICA/
 │   ├── DATOS_TECNICOS/
 │   └── NIVEL/
 │
-└── .gitignore
-```
-🔁 Nuevo Flujo de Trabajo (sin TRUNCATE)
-Código
-1️⃣ Actualizar funciones PL/pgSQL (si hay nuevas reglas)
+├── CHANGELOG.md
+├── .gitignore
+└── README.md
+🔁 Flujo de Trabajo (ETL y Despliegue)
+Actualizar funciones PL/pgSQL (si se incorporan nuevas reglas de negocio o validaciones).
 
-2️⃣ Ejecutar ETL con el patrón profesional:
-    STAGING → VALIDACIÓN → SWAP → VERIFICACIÓN
+Ejecutar el ETL modular bajo el patrón STAGING → VALIDACIÓN → SWAP → VERIFICACIÓN (sin TRUNCATE).
 
-3️⃣ Verificar la vista espacial en QGIS
-    v_pozos_geometria_auditoria_ubicacion_qgis (esta vista se proyecta con las UTM obtenidas de las coordenadas norte este de cada pozo)
+Verificar geometrías y ubicación en QGIS mediante las vistas de control y auditoría (incluida v_pozos_geometria_auditoria_ubicacion_qgis y la vista oficial v_pozos_wgs84_dd_qgis).
 
-4️⃣ Validar integridad relacional
-    PK–FK, huérfanos, duplicados, geometrías
+Validar integridad relacional (PK–FK, huérfanos, duplicados y geometrías).
 
-5️⃣ Commit + Push al repositorio
+Desarrollar y probar en ramas feature/... en local contra la API de Render, haciendo merge a main solo cuando esté validado.
+
+Commit + Push + Tag al repositorio para actualizar la documentación, Render y GitHub Pages.
 
 🧭 Origen de la Data Legacy
-La base original proviene del Ministerio del Ambiente de Venezuela, responsable de la gestión hídrica y ambiental del país hasta 2006.
-El repositorio rescata más de 15.000 registros de pozos profundos, utilizados históricamente en estudios académicos y técnicos.
+La base original proviene del antiguo Ministerio del Ambiente de Venezuela, responsable de la gestión hídrica y ambiental del país hasta 2006. El proyecto rescata más de 14.000–15.000 registros históricos de pozos profundos (según depuración y trazabilidad de tablas _limpios y _huerfanos) para garantizar su preservación, consulta abierta y reutilización en estudios técnicos y científicos.
 
-AquaGISVZLA moderniza esta información para garantizar su preservación y reutilización en nuevos trabajos.
+📊 Próximas Etapas
+Implementación de menú lateral y filtros dinámicos en el visor web (aquagisvzla-visor).
 
-📊 Estado Actual del Proyecto
-Modelo relacional completamente enlazado
-
-Tablas _limpios y _huerfanos estabilizadas
-
-Vista espacial oficial corregida y validada
-
-ETL modular por fases
-
-Documentación técnica completa
-
-ETL refactorizado sin TRUNCATE
-
-Arquitectura lista para visor web profesional
-
-Próximas etapas:
-Depuración espacial avanzada en QGIS
-
-Integración litológica y análisis estratigráfico
-
-Generación de mapas interactivos
-
-Publicación de dashboards web
+Ampliación de consultas espaciales y dashboards hidrogeológicos interactivos.
 
 🎓 Proyección Académica
-AquaGISVZLA servirá como base para:
-
-trabajos de investigación
-
-tesis de grado
-
-proyectos hidrogeológicos
-
-análisis SIG avanzados
-
-Máster en Sistemas de Información Geográfica (UNIGIS – Universitat de Girona)
+AquaGISVZLA sirve como base técnica y de datos para trabajos de investigación, tesis de grado, proyectos hidrogeológicos y análisis SIG avanzados, en el marco del Máster en Teledetección, Tecnologías de la Información Geográfica y Ciencia de Datos Espaciales (UNIGIS – Universitat de Girona).
 
 👤 Autor
-Derinson Rojas  
+Derinson Rojas
+
 Ingeniero Geólogo | SIG & ETL Developer
+
 Proyecto AquaGISVZLA — Modernización hidrogeoespacial de Venezuela.
 
-🗂️ Nota sobre la estructura del proyecto
-El directorio principal mantiene el nombre SIGATLASV1 por motivos de compatibilidad técnica y preservación de rutas internas utilizadas en:
-
-scripts ETL
-
-consultas SQL
-
-configuraciones de QGIS
-
-Aunque el nombre oficial del sistema es AquaGISVZLA, se conserva la denominación original para garantizar estabilidad y trazabilidad histórica.
+Nota sobre la nomenclatura del repositorio: El directorio principal mantiene la denominación SIGATLASV1 por compatibilidad técnica y preservación de rutas en scripts ETL, consultas SQL y configuraciones de QGIS, aunque el nombre oficial del sistema es AquaGISVZLA.
