@@ -1,4 +1,9 @@
 import { obtenerPozos } from './api.js';
+import {
+    filtrarPorAuditoria,
+    inicializarControlesSidebar,
+    actualizarContadorPozos
+} from './filtros.js';
 
 // Crear mapa centrado en Venezuela
 const map = L.map('map').setView([7.5, -66.5], 6);
@@ -9,70 +14,96 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
 }).addTo(map);
 
-// Función para cargar pozos desde el backend
-async function cargarPozos() {
-    try {
-        const geojson = await obtenerPozos();
+// Estado en memoria del GeoJSON y de la capa activa
+let geojsonOriginal = null;
+let capaPozos = null;
+let modoFiltroActual = 'UTILES'; // Por defecto excluye "FUERA DE LIMITES"
 
-        L.geoJSON(geojson, {
-            pointToLayer: function (feature, latlng) {
-    const estado = feature.properties.auditoria_estado;
-    let color = 'gray'; // color por defecto
-
-    switch (estado) {
-        case 'COINCIDE':
-            color = 'green';
-            break;
-        case 'FUERA DE LIMITES':
-            color = 'blue';
-            break;
-        case 'NO COINCIDE':
-            color = 'red';
-            break;
-        case 'SIN ENTIDAD':
-            color = '#ff9900'; // naranja suave
-            break;
+function crearCapaPozos(geojsonFiltrado) {
+    if (capaPozos) {
+        map.removeLayer(capaPozos);
     }
 
-    return L.circleMarker(latlng, {
-        radius: 5,
-        color: color,
-        fillColor: color,
-        fillOpacity: 0.7
-    });
-},
+    capaPozos = L.geoJSON(geojsonFiltrado, {
+        pointToLayer: function (feature, latlng) {
+            const estado = feature.properties.auditoria_estado;
+            let color = 'gray'; // color por defecto
 
-
-            onEachFeature: function (feature, layer) {
-                const p = feature.properties;
-
-                // Convertir booleanos a texto legible
-                const quimica = p.tiene_quimica ? "✅ Sí" : "❌ No";
-                const litologia = p.tiene_litologia ? "✅ Sí" : "❌ No";
-                const niveles = p.tiene_niveles ? "✅ Sí" : "❌ No";
-                const datos_tecnicos = p.tiene_datos_tecnicos ? "✅ Sí" : "❌ No";
-
-                // Crear popup con formato claro y profesional
-                const popup = `
-                    <div style="font-family: Arial; font-size: 13px;">
-                        <b>ID Pozo:</b> ${p.id_pozo}<br>
-                        <b>Estado:</b> ${p.estado}<br>
-                        <b>Auditoría de estado:</b> ${p.auditoria_estado || "Sin dato"}<br>
-                        <b>Lat:</b> ${p.lat_dd}<br>
-                        <b>Lon:</b> ${p.lon_dd}<br>
-                        <hr style="margin: 4px 0;">
-                        <b>Indicadores:</b><br>
-                        Química: ${quimica}<br>
-                        Litología: ${litologia}<br>
-                        Niveles: ${niveles}<br>
-                        Datos técnicos del pozo: ${datos_tecnicos}
-                    </div>
-                `;
-
-                layer.bindPopup(popup);
+            switch (estado) {
+                case 'COINCIDE':
+                    color = 'green';
+                    break;
+                case 'FUERA DE LIMITES':
+                    color = 'blue';
+                    break;
+                case 'NO COINCIDE':
+                    color = 'red';
+                    break;
+                case 'SIN ENTIDAD':
+                    color = '#ff9900'; // naranja suave
+                    break;
             }
-        }).addTo(map);
 
+            return L.circleMarker(latlng, {
+                radius: 5,
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.7
+            });
+        },
+
+        onEachFeature: function (feature, layer) {
+            const p = feature.properties;
+
+            // Convertir booleanos a texto legible
+            const quimica = p.tiene_quimica ? "✅ Sí" : "❌ No";
+            const litologia = p.tiene_litologia ? "✅ Sí" : "❌ No";
+            const niveles = p.tiene_niveles ? "✅ Sí" : "❌ No";
+            const datos_tecnicos = p.tiene_datos_tecnicos ? "✅ Sí" : "❌ No";
+
+            // Crear popup con formato claro y profesional
+            const popup = `
+                <div style="font-family: Arial; font-size: 13px;">
+                    <b>ID Pozo:</b> ${p.id_pozo}<br>
+                    <b>Estado:</b> ${p.estado}<br>
+                    <b>Auditoría de estado:</b> ${p.auditoria_estado || "Sin dato"}<br>
+                    <b>Lat:</b> ${p.lat_dd}<br>
+                    <b>Lon:</b> ${p.lon_dd}<br>
+                    <hr style="margin: 4px 0;">
+                    <b>Indicadores:</b><br>
+                    Química: ${quimica}<br>
+                    Litología: ${litologia}<br>
+                    Niveles: ${niveles}<br>
+                    Datos técnicos del pozo: ${datos_tecnicos}
+                </div>
+            `;
+
+            layer.bindPopup(popup);
+        }
+    }).addTo(map);
+
+    const total = geojsonOriginal?.features?.length ?? 0;
+    const visibles = geojsonFiltrado?.features?.length ?? 0;
+    actualizarContadorPozos(visibles, total);
+}
+
+function aplicarFiltroActual() {
+    if (!geojsonOriginal) return;
+    const filtrado = filtrarPorAuditoria(geojsonOriginal, modoFiltroActual);
+    crearCapaPozos(filtrado);
+}
+
+// Conectar controles del sidebar
+inicializarControlesSidebar((nuevoModo) => {
+    modoFiltroActual = nuevoModo;
+    aplicarFiltroActual();
+}, modoFiltroActual);
+
+// Función para cargar pozos desde el backend una sola vez
+async function cargarPozos() {
+    try {
+        geojsonOriginal = await obtenerPozos();
+        aplicarFiltroActual();
     } catch (error) {
         console.error('Error cargando pozos:', error);
     }
@@ -80,4 +111,3 @@ async function cargarPozos() {
 
 // Ejecutar carga de pozos
 cargarPozos();
-
