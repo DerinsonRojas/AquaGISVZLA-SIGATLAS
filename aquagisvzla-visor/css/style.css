@@ -162,3 +162,109 @@
     border-top: 1px solid #e2e8f0;
     color: #334155;
 }
+
+/* Cabecera flotante sobre el mapa */
+.cabecera-flotante {
+    position: fixed;
+    top: 12px;
+    left: 56px; /* Deja espacio para los botones + / - de Leaflet */
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: calc(100vw - 420px); /* Evita invadir el panel lateral derecho en escritorio */
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.cabecera-texto {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.cabecera-titulo {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cabecera-subtitulo {
+    margin: 2px 0 0;
+    font-size: 0.78rem;
+    line-height: 1.25;
+    color: #4b5563;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ajuste en pantallas más estrechas para evitar solapes */
+@media (max-width: 900px) {
+    .cabecera-flotante {
+        top: 10px;
+        left: 52px;
+        right: 12px;
+        max-width: none;
+        padding: 7px 12px;
+    }
+
+    .cabecera-subtitulo {
+        font-size: 0.72rem;
+    }
+}
+
+/* Panel descriptivo desplegable bajo la cabecera flotante */
+.oculto {
+    display: none;
+}
+.panel-info-visor {
+    position: fixed;
+    top: 68px;
+    left: 56px;
+    z-index: 1000;
+    width: 340px;
+    max-width: calc(100vw - 72px);
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+}
+
+.panel-info-visor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #1f2937;
+}
+
+.panel-info-visor-texto {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #374151;
+}
+
+@media (max-width: 900px) {
+    .panel-info-visor {
+        top: 64px;
+        left: 52px;
+        right: 12px;
+        width: auto;
+        max-width: none;
+    }
+}

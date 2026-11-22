@@ -111,3 +111,8 @@ async function cargarPozos() {
 
 // Ejecutar carga de pozos
 cargarPozos();
+
+//Llamada al visor de información
+import { initInfoVisor } from "./infoVisor.js";
+
+initInfoVisor();

@@ -10,7 +10,38 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
-
+<header id="cabecera-visor" class="cabecera-flotante" aria-label="Información del visor">
+        <div class="cabecera-texto">
+            <h1 class="cabecera-titulo">AquaGIS Venezuela</h1>
+            <p class="cabecera-subtitulo">Visor de pozos profundos · Auditoría espacial (SIGATLAS)</p>
+        </div>
+        <button
+            id="btn-info-visor"
+            type="button"
+            class="btn-info-i"
+            aria-expanded="false"
+            aria-controls="modal-info-visor"
+            title="Acerca del visor y fuente de datos"
+        >i</button>
+    </header>
+    <section
+        id="panel-info-visor"
+        class="panel-info-visor oculto"
+        aria-label="Descripción del proyecto"
+    >
+        <div class="panel-info-visor-header">
+            <strong>Sobre AquaGIS Venezuela</strong>
+            <button
+                id="btn-cerrar-info-visor"
+                type="button"
+                class="btn-cerrar-info"
+                aria-label="Cerrar descripción"
+            >✕</button>
+        </div>
+        <p id="texto-info-visor" class="panel-info-visor-texto">
+            Cargando descripción...
+        </p>
+    </section>
 <body>
     <aside id="sidebar-filtros" class="sidebar">
         <div class="sidebar-header">
