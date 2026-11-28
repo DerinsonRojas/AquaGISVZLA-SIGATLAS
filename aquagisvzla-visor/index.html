@@ -10,93 +10,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
-<header id="cabecera-visor" class="cabecera-flotante" aria-label="Información del visor">
-        <div class="cabecera-texto">
-            <h1 class="cabecera-titulo">AquaGIS Venezuela</h1>
-            <p class="cabecera-subtitulo">Visor de pozos profundos · Auditoría espacial (SIGATLAS)</p>
-        </div>
-        <button
-            id="btn-info-visor"
-            type="button"
-            class="btn-info-i"
-            aria-expanded="false"
-            aria-controls="modal-info-visor"
-            title="Acerca del visor y fuente de datos"
-        >i</button>
-    </header>
-    <section
-        id="panel-info-visor"
-        class="panel-info-visor oculto"
-        aria-label="Descripción del proyecto"
-    >
-        <div class="panel-info-visor-header">
-            <strong>Sobre AquaGIS Venezuela</strong>
-            <button
-                id="btn-cerrar-info-visor"
-                type="button"
-                class="btn-cerrar-info"
-                aria-label="Cerrar descripción"
-            >✕</button>
-        </div>
-        <p id="texto-info-visor" class="panel-info-visor-texto">
-            Cargando descripción...
-        </p>
-    </section>
+
 <body>
-    <aside id="sidebar-filtros" class="sidebar">
-        <div class="sidebar-header">
-            <h2>Filtros de pozos</h2>
-            <div class="sidebar-header-acciones">
-                <button
-                    id="btn-info-auditoria"
-                    type="button"
-                    class="btn-info-i"
-                    aria-expanded="false"
-                    aria-controls="info-auditoria-panel"
-                    title="Información sobre estado de auditoría"
-                >i</button>
-                <button id="btn-toggle-sidebar" type="button" title="Contraer/expandir">☰</button>
-            </div>
-        </div>
-
-        <div class="sidebar-body">
-            <div id="info-auditoria-panel" class="info-auditoria-panel oculto" role="region" aria-label="Información de auditoría">
-                <div class="info-auditoria-header">
-                    <strong>Auditoría de estado</strong>
-                    <button id="btn-cerrar-info-auditoria" type="button" class="btn-cerrar-info" aria-label="Cerrar información">✕</button>
-                </div>
-                <p>
-                    Esta auditoría verifica si el nombre del estado se corresponde con la ubicación geográfica del pozo contrastada con la capa vectorial del Instituto Geográfico de Venezuela Simón Bolívar (IGVSB). De la comparación se desprenden cuatro casos:
-                </p>
-                <ul>
-                    <li><strong>COINCIDE:</strong> Estos pozos tienen coincidencia en su nombre y ubicación geográfica.</li>
-                    <li><strong>NO COINCIDE:</strong> Estos pozos no tienen coincidencia, puede ser evidente que estén muy lejos geográficamente de lo que indica su nombre o que estén en una zona limítrofe.</li>
-                    <li><strong>FUERA DE LIMITE:</strong> Estos pozos caen fuera del territorio nacional o en cuerpos de agua.</li>
-                    <li><strong>SIN ENTIDAD:</strong> Al comparar los pozos con la capa vectorial de IGVSB para verificar su estado correspondiente, se encontró que muchos caen en zonas de disputas político-territoriales, la mayoría de estos pozos son útiles para análisis.</li>
-                </ul>
-                <p class="info-nota">
-                    <strong>Nota:</strong> Este visor muestra los pozos tal y como aparecen en el SIGATLAS, la utilización de pozos que no tienen la etiqueta COINCIDE queda a criterio del usuario, quien debe analizar cada caso por separado y valorar si la ubicación y nombre del pozo se corresponde con la realidad espacial.
-                </p>
-            </div>
-
-            <label for="select-auditoria" class="filtro-label">Auditoría de estado</label>
-            <select id="select-auditoria" class="filtro-select">
-                <option value="UTILES" selected>Pozos dentro del territorio</option>
-                <option value="TODOS">Todos</option>
-                <option value="COINCIDE">COINCIDE</option>
-                <option value="NO COINCIDE">NO COINCIDE</option>
-                <option value="SIN ENTIDAD">SIN ENTIDAD</option>
-                <option value="FUERA DE LIMITES">FUERA DE LIMITES</option>
-            </select>
-
-            <div id="contador-pozos" class="resumen-contador">Cargando pozos...</div>
-
-            <button id="btn-reset-filtros" type="button" class="btn-secundario">Restablecer</button>
-        </div>
-    </aside>
-
     <div id="map"></div>
 
-    <script type="module" src="./js/map.js"></script>
+    <script type="module" src="./src/js/main.js"></script>
 </body>
 </html>

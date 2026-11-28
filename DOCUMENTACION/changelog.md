@@ -2,6 +2,26 @@
 
 Este documento registra los cambios más importantes del proyecto AquaGISVZLA por versión, siguiendo buenas prácticas de control de versiones y documentación técnica.
 
+## v2.2 - 2025-11-28 [Sin publicar]
+
+### Seguridad
+
+- Activado Row-Level Security (RLS) en las tablas de la aplicación.
+- Aplicado `security_invoker` en las vistas según las recomendaciones de Supabase Security Advisor.
+- Restringidos los orígenes CORS del backend FastAPI a:
+  - `https://derinsonrojas.github.io`
+  - `http://localhost:5173`
+  - `http://127.0.0.1:5173`
+- Limitados los métodos HTTP permitidos mediante CORS a `GET`.
+- Eliminado el atributo `propietario` del GeoJSON público generado por el endpoint `/pozos`.
+- Revisada la arquitectura de acceso a datos y verificado que el frontend consume la información exclusivamente a través de FastAPI.
+
+### Verificación
+
+- Pruebas superadas en entorno local.
+- Pruebas superadas en producción (GitHub Pages + Render).
+- Funcionamiento correcto tras la activación de RLS y el endurecimiento de la configuración de seguridad.
+
 ## v2.2 - 2026-11-21
 
 ### Added

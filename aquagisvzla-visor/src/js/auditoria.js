@@ -6,7 +6,7 @@ export const OPCIONES_AUDITORIA = [
 ];
 
 /**
- * Filtra un GeoJSON FeatureCollection según el valor de auditoria_estado seleccionado.
+ * Filtra un GeoJSON FeatureCollection según el modo de auditoría.
  * Por defecto ("UTILES") excluye "FUERA DE LIMITES".
  */
 export function filtrarPorAuditoria(geojson, modo = "UTILES") {
@@ -29,44 +29,7 @@ export function filtrarPorAuditoria(geojson, modo = "UTILES") {
   };
 }
 
-/**
- * Conecta los controles del sidebar y dispara onChange(modo) cuando cambian.
- */
-export function inicializarControlesSidebar(onChange, modoInicial = "UTILES") {
-  const select = document.getElementById("select-auditoria");
-  const btnReset = document.getElementById("btn-reset-filtros");
-  const btnToggle = document.getElementById("btn-toggle-sidebar");
-  const sidebar = document.getElementById("sidebar-filtros");
-  inicializarInfoAuditoria();
-
-  if (select) {
-    select.value = modoInicial;
-    select.addEventListener("change", (e) => {
-      onChange(e.target.value);
-    });
-  }
-
-  if (btnReset && select) {
-    btnReset.addEventListener("click", () => {
-      select.value = modoInicial;
-      onChange(modoInicial);
-    });
-  }
-
-  if (btnToggle && sidebar) {
-    btnToggle.addEventListener("click", () => {
-      sidebar.classList.toggle("collapsed");
-    });
-  }
-}
-
-export function actualizarContadorPozos(visibles, total) {
-  const contador = document.getElementById("contador-pozos");
-  if (!contador) return;
-  contador.textContent = `Mostrando ${visibles.toLocaleString("es-VE")} de ${total.toLocaleString("es-VE")} pozos`;
-}
-
-function inicializarInfoAuditoria() {
+export function inicializarPanelAuditoria() {
   const btnInfo = document.getElementById("btn-info-auditoria");
   const panelInfo = document.getElementById("info-auditoria-panel");
   const btnCerrar = document.getElementById("btn-cerrar-info-auditoria");
