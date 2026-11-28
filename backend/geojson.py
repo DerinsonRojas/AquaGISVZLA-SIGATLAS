@@ -11,7 +11,7 @@ def pozos_to_geojson(rows):
             "municipio": r[1],
             "sitio": r[2],
             "nombre": r[3],
-            "propietario": r[4],
+            #"propietario": r[4],
             "estado": r[5],
             "auditoria_estado": r[6],
             "latitud": r[7],
